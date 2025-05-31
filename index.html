@@ -144,13 +144,17 @@
         function updateTime() {
             const now = new Date();
             document.getElementById('lastUpdate').textContent = now.toLocaleString();
-        }
-
-        // Initialize
+        }        // Initialize
         updateTime();
         
-        // Update every 30 seconds
-        setInterval(updateTime, 30000);        // Add some interactive animations
+        // Load server data on page load
+        updateServerData();
+        
+        // Update server data every 30 seconds
+        setInterval(updateServerData, 30000);
+        
+        // Update timestamp every 30 seconds
+        setInterval(updateTime, 30000);// Add some interactive animations
         document.addEventListener('DOMContentLoaded', function() {
             // Check if logo exists and show it, otherwise show placeholder
             const serverLogo = document.getElementById('serverLogo');
@@ -193,31 +197,140 @@
                     this.style.transform = 'translateX(0) scale(1)';
                 });
             });
-        });
-
-        // Function to update server data (for future API integration)
-        function updateServerData(data) {
-            // This function can be used to dynamically update the dashboard
-            // with new server data from an API call
-            console.log('Server data updated:', data);
-        }
-
-        // Simulate real-time updates (you can replace this with actual API calls)
-        function simulateUpdates() {
-            const statusElement = document.querySelector('.server-status');
-            const isOnline = Math.random() > 0.1; // 90% chance of being online
-            
-            if (isOnline) {
-                statusElement.innerHTML = '<i class="fas fa-server"></i> SERVER ONLINE';
-                statusElement.style.background = 'linear-gradient(135deg, #00ff00, #32cd32)';
-            } else {
-                statusElement.innerHTML = '<i class="fas fa-exclamation-triangle"></i> SERVER OFFLINE';
+        });        // Function to update server data (for API integration)
+        async function updateServerData() {
+            try {
+                const response = await fetch('https://honored-lava-lamprey.glitch.me/query/');
+                const serverData = await response.json();
+                
+                console.log('Server data received:', serverData);
+                
+                // Update server status
+                const statusElement = document.querySelector('.server-status');
+                if (serverData.online && serverData.data) {
+                    statusElement.innerHTML = '<i class="fas fa-server"></i> SERVER ONLINE';
+                    statusElement.style.background = 'linear-gradient(135deg, #00ff00, #32cd32)';
+                    
+                    const data = serverData.data;
+                    
+                    // Update server information
+                    document.querySelector('.info-item:nth-child(1) .info-value').textContent = data.name || 'Unknown Server';
+                    document.querySelector('.info-item:nth-child(2) .info-value').innerHTML = `<i class="fas fa-map"></i> ${data.map || 'Unknown'}`;
+                    document.querySelector('.info-item:nth-child(3) .info-value').textContent = data.raw?.version || 'Unknown';
+                    
+                    // Update password protection status
+                    const passwordStatus = data.password ? 
+                        '<i class="fas fa-lock" style="color: #ffd700;"></i> Yes' : 
+                        '<i class="fas fa-unlock" style="color: #00ff00;"></i> No';
+                    document.querySelector('.info-item:nth-child(4) .info-value').innerHTML = passwordStatus;
+                    
+                    // Update security status
+                    const securityStatus = data.raw?.secure === 1 ? 
+                        '<i class="fas fa-shield-alt" style="color: #00ff00;"></i> VAC Secured' : 
+                        '<i class="fas fa-shield-alt" style="color: #ff4444;"></i> Not Secured';
+                    document.querySelector('.info-item:nth-child(5) .info-value').innerHTML = securityStatus;
+                    
+                    // Update player statistics
+                    document.querySelector('.stat-card:nth-child(1) .stat-number').textContent = data.raw?.numplayers || 0;
+                    document.querySelector('.stat-card:nth-child(2) .stat-number').textContent = data.maxplayers || 0;
+                    
+                    // Update capacity bar
+                    const capacity = data.maxplayers > 0 ? Math.round((data.raw?.numplayers / data.maxplayers) * 100) : 0;
+                    document.querySelector('.progress-fill').style.width = capacity + '%';
+                    document.querySelector('.progress-bar + p').innerHTML = `Server Capacity: ${capacity}%`;
+                      // Update ping
+                    document.querySelector('.ping').innerHTML = `<i class="fas fa-wifi"></i> ${data.ping || 0}ms`;
+                    
+                    // Update Connection & Performance section
+                    const connectionItems = document.querySelectorAll('.card:nth-child(4) .info-item');
+                    if (connectionItems.length >= 4) {
+                        // Update Protocol
+                        connectionItems[1].querySelector('.info-value').textContent = `Steam Protocol ${data.raw?.protocol || 'Unknown'}`;
+                        
+                        // Update App ID
+                        connectionItems[2].querySelector('.info-value').textContent = data.raw?.appId || 'Unknown';
+                        
+                        // Update Environment
+                        const environment = data.raw?.environment === 'w' ? 'Windows Server' : 'Linux Server';
+                        connectionItems[3].querySelector('.info-value').textContent = environment;
+                    }
+                    
+                    // Update player list
+                    const playerList = document.querySelector('.player-list');
+                    playerList.innerHTML = '';
+                    
+                    if (data.players && data.players.length > 0) {
+                        data.players.forEach(player => {
+                            const playerTime = formatPlayTime(player.raw?.time || 0);
+                            const playerItem = document.createElement('div');
+                            playerItem.className = 'player-item';
+                            playerItem.innerHTML = `
+                                <div class="player-name">${player.name}</div>
+                                <div class="player-time">${playerTime}</div>
+                            `;
+                            playerList.appendChild(playerItem);
+                        });
+                        
+                        // Re-add hover effects to new player items
+                        const newPlayerItems = document.querySelectorAll('.player-item');
+                        newPlayerItems.forEach(item => {
+                            item.addEventListener('mouseenter', function() {
+                                this.style.transform = 'translateX(10px) scale(1.02)';
+                            });
+                            
+                            item.addEventListener('mouseleave', function() {
+                                this.style.transform = 'translateX(0) scale(1)';
+                            });
+                        });
+                    } else {
+                        playerList.innerHTML = '<div style="text-align: center; color: #cccccc; padding: 20px;"><i class="fas fa-user-slash"></i><br>No players online</div>';
+                    }
+                    
+                } else {
+                    // Server is offline or no data available
+                    statusElement.innerHTML = '<i class="fas fa-exclamation-triangle"></i> SERVER OFFLINE';
+                    statusElement.style.background = 'linear-gradient(135deg, #ff4444, #cc0000)';
+                    
+                    // Reset to default/offline values
+                    document.querySelector('.stat-card:nth-child(1) .stat-number').textContent = '0';
+                    document.querySelector('.stat-card:nth-child(2) .stat-number').textContent = '10';
+                    document.querySelector('.progress-fill').style.width = '0%';
+                    document.querySelector('.progress-bar + p').innerHTML = 'Server Capacity: 0%';
+                    document.querySelector('.ping').innerHTML = '<i class="fas fa-wifi"></i> 0ms';
+                    
+                    const playerList = document.querySelector('.player-list');
+                    playerList.innerHTML = '<div style="text-align: center; color: #ff4444; padding: 20px;"><i class="fas fa-server" style="font-size: 2rem; margin-bottom: 10px;"></i><br>Server Offline</div>';
+                }
+                
+                updateTime();
+                
+            } catch (error) {
+                console.error('Error fetching server data:', error);
+                
+                // Show connection error
+                const statusElement = document.querySelector('.server-status');
+                statusElement.innerHTML = '<i class="fas fa-exclamation-triangle"></i> CONNECTION ERROR';
                 statusElement.style.background = 'linear-gradient(135deg, #ff4444, #cc0000)';
+                
+                // Reset to offline state
+                document.querySelector('.stat-card:nth-child(1) .stat-number').textContent = '0';
+                document.querySelector('.stat-card:nth-child(2) .stat-number').textContent = '?';
+                document.querySelector('.progress-fill').style.width = '0%';
+                document.querySelector('.progress-bar + p').innerHTML = 'Server Capacity: 0%';
+                document.querySelector('.ping').innerHTML = '<i class="fas fa-wifi"></i> 0ms';
+                
+                const playerList = document.querySelector('.player-list');
+                playerList.innerHTML = '<div style="text-align: center; color: #ff4444; padding: 20px;"><i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 10px;"></i><br>Connection Error</div>';
             }
         }
-
-        // Check server status every minute
-        setInterval(simulateUpdates, 60000);
+        
+        // Helper function to format play time
+        function formatPlayTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            return `${hours}h ${minutes}m`;
+        }        // Check server status every minute
+        setInterval(updateServerData, 60000);
     </script>
 </body>
 </html>
