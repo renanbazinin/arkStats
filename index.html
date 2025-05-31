@@ -18,12 +18,11 @@
 </head>
 <body>
     <div class="container">        <div class="header">
-
             <h1><i class="fas fa-dragon"></i> ARK: SURVIVAL EVOLVED</h1>
             <p class="subtitle">Server Dashboard & Statistics</p>
-            <div class="server-status">
-                <i class="fas fa-server"></i>
-                SERVER ONLINE
+            <div class="server-status loading">
+                <i class="fas fa-spinner fa-spin"></i>
+                LOADING...
             </div>
         </div>
 
@@ -33,27 +32,26 @@
                 <div class="card-header">
                     <i class="fas fa-info-circle card-icon"></i>
                     <h2 class="card-title">Server Information</h2>
-                </div>
-                <div class="server-info">
+                </div>                <div class="server-info">
                     <div class="info-item">
                         <span class="info-label">Server Name</span>
-                        <span class="info-value">TRL cool server - nitrado.net</span>
+                        <span class="info-value"><i class="fas fa-spinner fa-spin"></i> Loading...</span>
                     </div>
                     <div class="info-item">
                         <span class="info-label">Map</span>
-                        <span class="info-value map-name"><i class="fas fa-map"></i> Ragnarok</span>
+                        <span class="info-value map-name"><i class="fas fa-spinner fa-spin"></i> Loading...</span>
                     </div>
                     <div class="info-item">
                         <span class="info-label">Version</span>
-                        <span class="info-value">v358.24</span>
+                        <span class="info-value"><i class="fas fa-spinner fa-spin"></i> Loading...</span>
                     </div>
                     <div class="info-item">
                         <span class="info-label">Password Protected</span>
-                        <span class="info-value"><i class="fas fa-lock" style="color: #ffd700;"></i> Yes</span>
+                        <span class="info-value"><i class="fas fa-spinner fa-spin"></i> Loading...</span>
                     </div>
                     <div class="info-item">
                         <span class="info-label">Security</span>
-                        <span class="info-value"><i class="fas fa-shield-alt" style="color: #00ff00;"></i> VAC Secured</span>
+                        <span class="info-value"><i class="fas fa-spinner fa-spin"></i> Loading...</span>
                     </div>
                 </div>
             </div>
@@ -63,22 +61,25 @@
                 <div class="card-header">
                     <i class="fas fa-users card-icon"></i>
                     <h2 class="card-title">Player Statistics</h2>
-                </div>
-                <div class="stats-grid">
+                </div>                <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-number">3</div>
+                        <div class="stat-number loading-number">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
                         <div class="stat-label">ONLINE PLAYERS</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-number">10</div>
+                        <div class="stat-number loading-number">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
                         <div class="stat-label">MAX PLAYERS</div>
                     </div>
                 </div>
                 <div class="progress-bar">
-                    <div class="progress-fill" style="width: 30%;"></div>
+                    <div class="progress-fill" style="width: 0%;"></div>
                 </div>
                 <p style="text-align: center; margin-top: 10px; color: #cccccc;">
-                    Server Capacity: 30%
+                    Loading server capacity...
                 </p>
             </div>
 
@@ -87,19 +88,10 @@
                 <div class="card-header">
                     <i class="fas fa-user-friends card-icon"></i>
                     <h2 class="card-title">Active Survivors</h2>
-                </div>
-                <div class="player-list">
-                    <div class="player-item">
-                        <div class="player-name">Mr.F III</div>
-                        <div class="player-time">15h 5m</div>
-                    </div>
-                    <div class="player-item">
-                        <div class="player-name">renanbazinin2</div>
-                        <div class="player-time">12h 23m</div>
-                    </div>
-                    <div class="player-item">
-                        <div class="player-name">Cheeze</div>
-                        <div class="player-time">10h 46m</div>
+                </div>                <div class="player-list">
+                    <div style="text-align: center; color: #cccccc; padding: 20px;">
+                        <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                        <br>Loading players...
                     </div>
                 </div>
             </div>
